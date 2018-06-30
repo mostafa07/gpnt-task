@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
 
 public final class UserContract {
 
+    private static final String LOG_TAG = UserContract.class.getSimpleName();
+
     public static final String CONTENT_AUTHORITY = "com.example.mostafa,gplanettask";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_USERS = "users";
@@ -22,7 +24,7 @@ public final class UserContract {
         public static final String CONTENT_LIST_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USERS;
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" +CONTENT_AUTHORITY + "/" + PATH_USERS;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USERS;
 
 
         public static final String TABLE_NAME = "users";

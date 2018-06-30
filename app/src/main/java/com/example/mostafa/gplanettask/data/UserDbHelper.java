@@ -3,11 +3,14 @@ package com.example.mostafa.gplanettask.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.example.mostafa.gplanettask.data.UserContract.UserEntry;
 import com.example.mostafa.gplanettask.data.UserContract.SessionEntry;
 
 
 public class UserDbHelper extends SQLiteOpenHelper {
+
+    private static final String LOG_TAG = UserDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "book.db";
     private static final int DATABASE_VERSION = 1;
@@ -33,6 +36,6 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
     }
 }

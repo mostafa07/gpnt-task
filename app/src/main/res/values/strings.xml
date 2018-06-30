@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GPLanetTask</string>
+
+    <string name="empty_list_text">No users available</string>
 </resources>
