@@ -29,6 +29,6 @@ public class UserCursorAdapter extends CursorAdapter {
         TextView percentageTV = view.findViewById(R.id.percentage);
 
         int userIdColumnIndex = cursor.getColumnIndex(SessionEntry._ID);
-        
+
     }
 }
