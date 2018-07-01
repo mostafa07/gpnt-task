@@ -130,7 +130,7 @@ public class UserProvider extends ContentProvider {
             Log.e(LOG_TAG, "Ending page must be within [0:70], not " + to);
             return null;
         }
-        if (to > from) {
+        if (from > to) {
             Log.e(LOG_TAG, "Ending page can not be before starting page");
             return null;
         }

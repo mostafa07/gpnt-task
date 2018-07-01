@@ -4,4 +4,5 @@
     <string name="empty_list_text">No users available</string>
     <string name="user_not_found">User is not found</string>
     <string name="query">Query</string>
+    <string name="users_list_text">Users List:\n\n</string>
 </resources>

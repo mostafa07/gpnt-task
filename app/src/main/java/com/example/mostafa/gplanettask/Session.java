@@ -49,6 +49,15 @@ public class Session {
         this.userId = userId;
     }
 
+    @Override
+    public String toString() {
+        return "Session{" +
+                "sessionId=" + sessionId +
+                ", from=" + from +
+                ", to=" + to +
+                ", userId=" + userId +
+                '}';
+    }
 
     public int sumOfPages() {
         return this.to - this.from + 1;

@@ -20,7 +20,7 @@
 
         <provider
             android:name=".data.UserProvider"
-            android:authorities="com.example.mostafa.gplanettask"
+            android:authorities="com.example.mostafa,gplanettask"
             android:exported="false"
             android:enabled="true"/>
 

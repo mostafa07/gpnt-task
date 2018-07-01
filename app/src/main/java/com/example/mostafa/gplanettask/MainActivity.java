@@ -1,6 +1,5 @@
 package com.example.mostafa.gplanettask;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.example.mostafa.gplanettask.data.UserContract.UserEntry;
 import com.example.mostafa.gplanettask.data.UserContract.SessionEntry;
@@ -20,10 +20,13 @@ import com.example.mostafa.gplanettask.data.UserContract.SessionEntry;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     private EditText mUserIdInputET;
-    TextView mUserNameTV;
-    TextView mUserIdTV;
-    TextView mPercentageTV;
+    private TextView mUserNameTV;
+    private TextView mUserIdTV;
+    private TextView mPercentageTV;
+    private TextView mUserOrderTV;
 
     private Cursor mCursor;
     private ArrayList<Session> mAllSessions;
@@ -41,19 +44,31 @@ public class MainActivity extends AppCompatActivity {
         mUserNameTV = findViewById(R.id.user_name_tv);
         mUserIdTV = findViewById(R.id.user_id_tv);
         mPercentageTV = findViewById(R.id.percentage_tv);
+        mUserOrderTV = findViewById(R.id.user_order_tv);
+        TextView usersListTV = findViewById(R.id.users_list_tv);
 
-        insertDummyData();
+        //insertDummyData();
 
         mCursor = getContentResolver().query(SessionEntry.CONTENT_URI,
                 null, null, null, SessionEntry.COLUMN_USER_ID);
 
         extractSessionsData();
+
         separateUserSessions();
+
         constructUsersList();
+        Collections.sort(mUsersList);
+
+        usersListTV.setText(getString(R.string.users_list_text));
+        for (User user : mUsersList) {
+            usersListTV.append(user.toString() + "\n");
+        }
 
         mUserNameTV.setText(String.valueOf("User Name: ---"));
         mUserIdTV.setText(String.valueOf("User ID: ---"));
         mPercentageTV.setText(String.valueOf("Reading Percentage: ---"));
+        mUserOrderTV.setText(String.valueOf("User Order: ---"));
+
 
         queryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,18 +77,24 @@ public class MainActivity extends AppCompatActivity {
                 int userIdInput = Integer.parseInt(mUserIdInputET.getText().toString());
                 User currentUser = null;
                 for (User user : mUsersList) {
-                    if (user.getUserId() == userIdInput) {
+                    if (user.getUserId() == userIdInput)
                         currentUser = user;
-                    }
                 }
 
                 if (currentUser == null) {
                     Toast.makeText(MainActivity.this, getString(R.string.user_not_found),
                             Toast.LENGTH_SHORT).show();
+                    mUserNameTV.setText(String.valueOf("User Name: NA"));
+                    mUserIdTV.setText(String.valueOf("User ID: NA"));
+                    mPercentageTV.setText(String.valueOf("Reading Percentage: NA"));
+                    mUserOrderTV.setText(String.valueOf("User Order: NA"));
                 } else {
                     mUserNameTV.setText(String.valueOf("User Name: " + currentUser.getUserName()));
                     mUserIdTV.setText(String.valueOf("User ID: " + currentUser.getUserId()));
                     mPercentageTV.setText(String.valueOf("Reading Percentage: " + currentUser.getReadingPercentage()));
+
+                    int userOrder = mUsersList.indexOf(currentUser) + 1;
+                    mUserOrderTV.setText(String.valueOf("User Order: " + userOrder));
                 }
             }
         });
@@ -81,42 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mCursor.close();
     }
 
-
-    private void insertDummyData() {
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(UserEntry.COLUMN_USER_NAME, "Jane");
-        Uri uri = getContentResolver().insert(UserEntry.CONTENT_URI, contentValues);
-
-        contentValues = new ContentValues();
-        contentValues.put(UserEntry.COLUMN_USER_NAME, "Ahmed");
-        uri = getContentResolver().insert(UserEntry.CONTENT_URI, contentValues);
-
-
-        contentValues = new ContentValues();
-        contentValues.put(SessionEntry.COLUMN_FROM, 1);
-        contentValues.put(SessionEntry.COLUMN_TO, 20);
-        contentValues.put(SessionEntry.COLUMN_USER_ID, 1);
-        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
-
-        contentValues = new ContentValues();
-        contentValues.put(SessionEntry.COLUMN_FROM, 33);
-        contentValues.put(SessionEntry.COLUMN_TO, 47);
-        contentValues.put(SessionEntry.COLUMN_USER_ID, 2);
-        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
-
-        contentValues = new ContentValues();
-        contentValues.put(SessionEntry.COLUMN_FROM, 9);
-        contentValues.put(SessionEntry.COLUMN_TO, 30);
-        contentValues.put(SessionEntry.COLUMN_USER_ID, 1);
-        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
-
-        contentValues = new ContentValues();
-        contentValues.put(SessionEntry.COLUMN_FROM, 39);
-        contentValues.put(SessionEntry.COLUMN_TO, 67);
-        contentValues.put(SessionEntry.COLUMN_USER_ID, 2);
-        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
-    }
 
     private void extractSessionsData() {
 
@@ -170,23 +155,56 @@ public class MainActivity extends AppCompatActivity {
 
             int currentUserId = sessionsList.get(0).getUserId();
 
-            //String selection = UserEntry._ID + " = ?";
-            //String[] selectionArgs = new String[]{String.valueOf(currentUserId)};
+            String selection = UserEntry._ID + " = ?";
+            String[] selectionArgs = new String[]{String.valueOf(currentUserId)};
 
-            //Cursor cursor = getContentResolver().query(UserEntry.CONTENT_URI,
-            //        null, selection, selectionArgs, null);
-
-            Uri reqUri = ContentUris.withAppendedId(UserEntry.CONTENT_URI, currentUserId);
-
-            Cursor cursor = getContentResolver().query(reqUri,
-                    null, null, null, null);
+            Cursor cursor = getContentResolver().query(UserEntry.CONTENT_URI,
+                    null, selection, selectionArgs, null);
 
             int userNameColumnIndex = cursor.getColumnIndex(UserEntry.COLUMN_USER_NAME);
             cursor.moveToFirst();
             String userName = cursor.getString(userNameColumnIndex);
 
-            mUsersList.add(new User(userName, sessionsList));
+            mUsersList.add(new User(currentUserId, userName, sessionsList));
+
+            cursor.close();
         }
+    }
+
+    private void insertDummyData() {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UserEntry.COLUMN_USER_NAME, "Jane");
+        Uri uri = getContentResolver().insert(UserEntry.CONTENT_URI, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put(UserEntry.COLUMN_USER_NAME, "Ahmed");
+        uri = getContentResolver().insert(UserEntry.CONTENT_URI, contentValues);
+
+
+        contentValues = new ContentValues();
+        contentValues.put(SessionEntry.COLUMN_FROM, 1);
+        contentValues.put(SessionEntry.COLUMN_TO, 20);
+        contentValues.put(SessionEntry.COLUMN_USER_ID, 1);
+        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put(SessionEntry.COLUMN_FROM, 33);
+        contentValues.put(SessionEntry.COLUMN_TO, 47);
+        contentValues.put(SessionEntry.COLUMN_USER_ID, 2);
+        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put(SessionEntry.COLUMN_FROM, 9);
+        contentValues.put(SessionEntry.COLUMN_TO, 30);
+        contentValues.put(SessionEntry.COLUMN_USER_ID, 1);
+        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put(SessionEntry.COLUMN_FROM, 39);
+        contentValues.put(SessionEntry.COLUMN_TO, 67);
+        contentValues.put(SessionEntry.COLUMN_USER_ID, 2);
+        uri = getContentResolver().insert(SessionEntry.CONTENT_URI, contentValues);
     }
 
 }

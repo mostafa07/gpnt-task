@@ -1,18 +1,21 @@
 package com.example.mostafa.gplanettask;
 
+import android.support.annotation.NonNull;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
-public class User {
+public class User implements Comparable<User> {
 
     private int userId;
     private String userName;
     private int uniquePages;
 
-    public User(String userName, List<Session> sessionsList) {
+    public User(int userId, String userName, List<Session> sessionsList) {
 
+        this.userId = userId;
         this.userName = userName;
         this.uniquePages = 0;
 
@@ -52,8 +55,23 @@ public class User {
         this.uniquePages = uniquePages;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", uniquePages=" + uniquePages +
+                '}';
+    }
+
+    @Override
+    public int compareTo(@NonNull User otherUser) {
+        return otherUser.getUniquePages() - this.uniquePages;
+    }
+
 
     public double getReadingPercentage() {
         return this.uniquePages / 70.0;
     }
+
 }

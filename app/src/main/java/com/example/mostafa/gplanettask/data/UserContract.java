@@ -50,8 +50,8 @@ public final class UserContract {
         public static final String TABLE_NAME = "sessions";
 
         public static final String _ID = BaseColumns._ID;
-        public static final String COLUMN_FROM = "from";
-        public static final String COLUMN_TO = "to";
+        public static final String COLUMN_FROM = "from_page";
+        public static final String COLUMN_TO = "to_page";
         public static final String COLUMN_USER_ID = "user_id";
     }
 }
