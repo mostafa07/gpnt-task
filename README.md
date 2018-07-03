@@ -1,4 +1,7 @@
 # gpnt-task
+
+![App Logo](/logo/logotipe88.png)
+
 A simple Android app that counts unique read book pages by user using an SQLiteDatabase and ContentProvider, etc.
 Implemented as a pre-interview task for G-Planet Tech
 

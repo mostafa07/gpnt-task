@@ -47,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
         mUserOrderTV = findViewById(R.id.user_order_tv);
         TextView usersListTV = findViewById(R.id.users_list_tv);
 
-        //insertDummyData();
+
+        mCursor = getContentResolver().query(UserEntry.CONTENT_URI,
+                null, null, null, null);
+        if (!mCursor.moveToFirst()) {
+            insertDummyData();
+        }
 
         mCursor = getContentResolver().query(SessionEntry.CONTENT_URI,
                 null, null, null, SessionEntry.COLUMN_USER_ID);
@@ -74,7 +79,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                int userIdInput = Integer.parseInt(mUserIdInputET.getText().toString());
+                String input = mUserIdInputET.getText().toString();
+                if (input.isEmpty() || input == null) {
+                    Toast.makeText(MainActivity.this, getString(R.string.invalid_input),
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int userIdInput = Integer.parseInt(input);
                 User currentUser = null;
                 for (User user : mUsersList) {
                     if (user.getUserId() == userIdInput)
